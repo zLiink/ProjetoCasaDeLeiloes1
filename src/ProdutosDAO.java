@@ -14,12 +14,9 @@ public class ProdutosDAO {
     ResultSet rs = null;
     conectaDAO conn = new conectaDAO();
 
-        String sql = "INSERT INTO produtos (nome, valor, status) VALUES  (?, ?, ?);";
-
-    ArrayList<ProdutosDTO> listagem = new ArrayList<>();
-
     public int cadastrarProduto(ProdutosDTO produto) {
         int status = 0;
+        String sql = "INSERT INTO produtos (nome, valor, status) VALUES  (?, ?, ?);";
 
         try {
             conn.conectar();
@@ -30,7 +27,6 @@ public class ProdutosDAO {
             st.setString(3, produto.getStatus());
 
             status = st.executeUpdate();
-            conn.desconectar();
 
             return status = 1;
 
@@ -43,7 +39,24 @@ public class ProdutosDAO {
 
     public ArrayList<ProdutosDTO> listarProdutos() {
 
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+        String sql = "SELECT * FROM produtos";
+        ProdutosDTO produto = new ProdutosDTO();
+
+        try {
+            Connection conexao = conn.getConnection();
+            st = conexao.prepareStatement(sql);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    produto.setId(rs.getInt("id"));
+                    produto.setNome(rs.getString("nome"));
+                    produto.setValor(rs.getInt("valor"));
+                    produto.setStatus(rs.getString("status"));
+                }
+            }
+        } catch (SQLException sqle) {
+            JOptionPane.showMessageDialog(null, "Nenhum produto encontrado!");
+        }
         return listagem;
     }
-
 }
